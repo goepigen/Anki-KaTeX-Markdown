@@ -1,4 +1,37 @@
-""" This file contains all the HTML / CSS strings for the different card types """
+"""This file contains all the HTML / CSS strings for the different card types"""
+
+from pathlib import Path
+
+
+def load_js_function(filename: str) -> str:
+    return Path(filename).read_text()
+
+
+jsRenderMath = load_js_function("js/renderMath.js")
+
+
+jsMarkdown = load_js_function("js/markdown.js")
+
+
+jsReplaceInString = load_js_function("js/replaceInString.js")
+
+
+jsReplaceHTMLElementsInString = load_js_function("js/replaceHTMLElementsInString.js")
+
+
+jsGetScript = load_js_function("js/getScript.js")
+
+
+jsGetCSS = load_js_function("js/getCSS.js")
+
+jsRenderFunctions = (
+    jsRenderMath
+    + jsMarkdown
+    + jsReplaceInString
+    + jsReplaceHTMLElementsInString
+    + jsGetScript
+    + jsGetCSS
+)
 
 HTMLforEditor = """
         var area = document.getElementById('markdown-area');
@@ -190,7 +223,7 @@ front = """
 				css_online.setAttribute('rel', 'stylesheet');
 				css_online.type = 'text/css';
 				css_online.onload = resolve;
-				css.onerror = reject;
+				css_online.onerror = reject;
 				css_online.href = altURL;
 				document.head.appendChild(css_online);
 			}
