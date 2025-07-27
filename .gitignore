@@ -1,3 +1,13 @@
 venv/
 
 __pycache__
+
+.DS_Store
+
+.worktrees/
+
+temp/
+temp2
+node_modules/
+meta.json
+
