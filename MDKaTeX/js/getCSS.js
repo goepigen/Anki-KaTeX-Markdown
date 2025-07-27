@@ -1,4 +1,4 @@
-function getCSS(path, altURL) {
+export function getCSS(path, altURL) {
   return new Promise((resolve, reject) => {
     var css = document.createElement("link");
     css.setAttribute("rel", "stylesheet");

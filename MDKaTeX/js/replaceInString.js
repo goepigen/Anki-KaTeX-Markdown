@@ -1,4 +1,4 @@
-function replaceInString(str) {
+export function replaceInString(str) {
   str = str.replace(/<[\/]?pre[^>]*>/gi, "");
   str = str.replace(/<br\s*[\/]?[^>]*>/gi, "\\n");
   str = str.replace(/<div[^>]*>/gi, "\\n");

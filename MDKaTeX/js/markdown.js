@@ -1,4 +1,4 @@
-function markdown(ID) {
+export function markdown(ID) {
   let md = new markdownit({
     typographer: true,
     html: true,

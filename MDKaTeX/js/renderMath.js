@@ -1,4 +1,4 @@
-function renderMath(text) {
+export function renderMath(text) {
   text = replaceInString(text);
   area.textContent = text;
   renderMathInElement(area, {

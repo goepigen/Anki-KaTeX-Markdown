@@ -1,4 +1,4 @@
-function getScript(path, altURL) {
+export function getScript(path, altURL) {
   return new Promise((resolve, reject) => {
     let script = document.createElement("script");
     script.onload = resolve;

@@ -1,4 +1,4 @@
-function replaceHTMLElementsInString(str) {
+export function replaceHTMLElementsInString(str) {
   str = str.replace(/&nbsp;/gi, " ");
   str = str.replace(/&tab;/gi, "	");
   str = str.replace(/&gt;/gi, ">");
