@@ -1,19 +1,7 @@
 import { getCSS } from "./getCSS.js";
 import { getScript } from "./getScript.js";
-import { renderMath } from "./renderMath.js";
 import { markdown } from "./markdown.js";
-
-function render() {
-  const ids = Array.from(document.querySelectorAll("div[id^='mdkatex-']")).map(
-    (div) => div.id
-  );
-
-  ids.forEach((id) => {
-    renderMath(id);
-    markdown(id);
-    document.getElementById(id).style.visibility = "visible";
-  });
-}
+import { renderMath } from "./renderMath.js";
 
 const getResources = [
   getCSS(
@@ -53,9 +41,25 @@ Promise.all(getResources)
       "https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/contrib/mhchem.min.js"
     )
   )
-  .then(render)
+  .then(() => {
+    // document.getElementById("debug").textContent = "renderMath called";
+    // console.log("renderMathInElement:", typeof window.renderMathInElement);
+    render();
+  })
   .catch(() => {
     document
       .querySelectorAll("div[id]")
       .forEach((div) => (div.style.visibility = "visible"));
   });
+
+function render() {
+  const ids = Array.from(document.querySelectorAll("div[id^='mdkatex-']")).map(
+    (div) => div.id
+  );
+  document.getElementById("debug").textContent = ids;
+  ids.forEach((id) => {
+    renderMath(id);
+    markdown(id);
+    document.getElementById(id).style.visibility = "visible";
+  });
+}

@@ -1,17 +1,18 @@
+import { replaceHTMLElementsInString } from "./replaceHTMLElementsInString";
 export function markdown(ID) {
-  let md = new markdownit({
+  let md = new window.markdownit({
     typographer: true,
     html: true,
     highlight: function (str, lang) {
-      if (lang && hljs.getLanguage(lang)) {
+      if (lang && window.hljs?.getLanguage(lang)) {
         try {
-          return hljs.highlight(str, { language: lang }).value;
+          return window.hljs?.highlight(str, { language: lang }).value;
         } catch (__) {}
       }
 
       return ""; // use external default escaping
     },
-  }).use(markdownItMark);
+  }).use(window.markdownItMark);
   let text = replaceHTMLElementsInString(document.getElementById(ID).innerHTML);
   text = md.render(text);
   document.getElementById(ID).innerHTML = text.replace(

@@ -1,40 +1,73 @@
 import os
 import shutil
 
-from .HTMLandCSS import front, back, front_cloze, back_cloze, css
 from aqt import mw
 from anki.hooks import addHook
 import anki
 
 from pathlib import Path
 
+
 # Load bundled JS into a string
 BUNDLE_PATH = Path(__file__).parent.parent / "dist" / "editor.bundle.js"
 HTMLforEditor = BUNDLE_PATH.read_text(encoding="utf-8")
 
-MODEL_NAME = "KaTeX and Markdown"
+MODEL_NAME = "KM"
 CONF_NAME = "MDKATEX"
 
-def build_cloze_card_html(front_fields, back_fields, bundle_name="card.bundle.js"):
-    body = "\n".join(
-        f"<div id="mdkatex-{field.loewr()}"><pre>{{{{{cloze:Text}}}}}}</pre></div>"
-        for field in front_fields
+css = """
+
+.card {
+  font-family: arial;
+  font-size: 20px;
+  color: black;
+  background-color: white;
+}
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+#mdkatex-front, #mdkatex-back, #extra {
+	visibility: hidden;
+}
+pre code {
+  background-color: #eee;
+  border: 1px solid #999;
+  display: block;
+  padding: 20px;
+  overflow: auto;
+}
+"""
+
+
+def build_cloze_card_html(front_fields, back_fields=[], bundle_name="card.bundle.js"):
+    body = (
+        '\n<div id="debug"></div>\n'
+        + "\n".join(
+            f"<div id='mdkatex-{field.lower()}'><pre>{{{{cloze:{field}}}}}</pre></div>"
+            for field in front_fields
+        )
+        + f'\n<div id="extra"><pre>{{Back Extra}}</pre></div>'
     )
+
     if back_fields:
-    body += f'\n<div id="extra"><pre>{{Back Extra}}</pre></div>'
-    
+        body += "\n".join(
+            f"<div id='mdkatex-{field.lower()}'><pre>{{{{{field}}}}}</pre></div>"
+            for field in back_fields
+        )
+
     script = f'<script src="{bundle_name}"></script>'
     return f"{body}\n{script}"
 
 
 def build_card_html(front_fields, back_fields=[], bundle_name="card.bundle.js"):
-    body = "\n".join(
+    body = '\n<div id="debug"></div>\n' + "\n".join(
         f"<div id='mdkatex-{field.lower()}'><pre>{{{{{field}}}}}</pre></div>"
         for field in front_fields
     )
 
     if back_fields:
-        body += '<hr id="answer" />\n' + "\n".join(
+        body += '\n<hr id="answer" />\n' + "\n".join(
             f"<div id='mdkatex-{field.lower()}'><pre>{{{{{field}}}}}</pre></div>"
             for field in back_fields
         )
@@ -137,8 +170,9 @@ def create_model_cloze():
     m.addField(model, field)
 
     template = m.newTemplate(MODEL_NAME + " Cloze")
-    template["qfmt"] = ["Text"]
-    template["afmt"] = ["Text", "Back Extra"]
+    template["qfmt"] = build_cloze_card_html(["Text"])
+    template["afmt"] = build_cloze_card_html(["Text", "Back Extra"])
+
     model["css"] = css
 
     m.addTemplate(model, template)
@@ -197,8 +231,10 @@ def update():
 
 
 def _add_file(path, filename):
-    if not os.path.isfile(os.path.join(mw.col.media.dir(), filename)):
-        mw.col.media.add_file(path)
+    dest = os.path.join(mw.col.media.dir(), filename)
+    if os.path.exists(dest):
+        os.remove(dest)  # delete old version
+    mw.col.media.add_file(path)
 
 
 addHook("profileLoaded", create_model_if_necessacy)

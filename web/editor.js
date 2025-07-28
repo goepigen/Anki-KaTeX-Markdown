@@ -1,7 +1,7 @@
-import { renderMath } from "./renderMath.js";
 import { markdown } from "./markdown.js";
 import { getCSS } from "./getCSS.js";
 import { getScript } from "./getScript.js";
+import { replaceInString } from "./replaceInString.js";
 
 let area = document.getElementById("markdown-area");
 if (area) area.remove();
@@ -88,6 +88,18 @@ Promise.all(getResources)
     )
   )
   .then(main);
+
+function renderMath(text) {
+  text = replaceInString(text);
+  area.textContent = text;
+  window.renderMathInElement(area, {
+    delimiters: [
+      { left: "$$", right: "$$", display: true },
+      { left: "$", right: "$", display: false },
+    ],
+    throwOnError: false,
+  });
+}
 
 function render(text) {
   renderMath(text);
