@@ -9,11 +9,29 @@ import anki
 from pathlib import Path
 
 # Load bundled JS into a string
-BUNDLE_PATH = Path(__file__).parent / "dist" / "editor.bundle.js"
+BUNDLE_PATH = Path(__file__).parent.parent / "dist" / "editor.bundle.js"
 HTMLforEditor = BUNDLE_PATH.read_text(encoding="utf-8")
 
 MODEL_NAME = "KaTeX and Markdown"
 CONF_NAME = "MDKATEX"
+
+
+def build_card_html(fields, bundle_name="_card.bundle.js"):
+    body = "\n".join(
+        f"<div id='mdkatex-{field.lower()}'><pre>{{{{{field}}}}}</pre></div>"
+        for field in fields
+    )
+    script = f'<script src="{bundle_name}"></script>'
+    return f"{body}\n{script}"
+
+
+def build_cloze_html(fields, bundle_name="_card.bundle.js"):
+    body = "\n".join(
+        f"<div id='mdkatex-{field.lower()}'><pre>{{{{cloze:{field}}}}}</pre></div>"
+        for field in fields
+    )
+    script = f'<script src="{bundle_name}"></script>'
+    return f"{body}\n{script}"
 
 
 def markdownPreview(editor):
@@ -79,8 +97,8 @@ def create_model():
     m.addField(model, field)
 
     template = m.newTemplate(MODEL_NAME + " Basic")
-    template["qfmt"] = front
-    template["afmt"] = back
+    template["qfmt"] = build_card_html(["Front"])
+    template["afmt"] = build_card_html(["Front", "Back"])
     model["css"] = css
 
     m.addTemplate(model, template)
@@ -101,8 +119,8 @@ def create_model_cloze():
     m.addField(model, field)
 
     template = m.newTemplate(MODEL_NAME + " Cloze")
-    template["qfmt"] = front_cloze
-    template["afmt"] = back_cloze
+    template["qfmt"] = ["Text"]
+    template["afmt"] = ["Text", "Back Extra"]
     model["css"] = css
 
     m.addTemplate(model, template)
@@ -133,7 +151,10 @@ def update():
     if os.path.isdir(os.path.join(mw.col.media.dir(), "_markdown-it")):
         shutil.rmtree(os.path.join(mw.col.media.dir(), "_markdown-it"))
 
-    addon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
+    # Copy new assets from assets/
+    addon_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "assets")
+    )
 
     _add_file(os.path.join(addon_path, "_katex.min.js"), "_katex.min.js")
     _add_file(os.path.join(addon_path, "_katex.css"), "_katex.css")

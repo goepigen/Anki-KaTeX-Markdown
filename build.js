@@ -1,14 +1,25 @@
-// build.js
 const esbuild = require("esbuild");
 
-esbuild
-  .build({
+const builds = [
+  {
     entryPoints: ["web/editor.js"],
-    bundle: true,
-    outfile: "dist/editor.bundle.js", // Where Anki will read from
-    format: "iife", // Wrap in a function for script injection
-    target: ["chrome58"], // QtWebEngine compatibility
-    minify: false,
-    sourcemap: false,
-  })
-  .catch(() => process.exit(1));
+    outfile: "dist/editor.bundle.js",
+  },
+  {
+    entryPoints: ["web/card.js"],
+    outfile: "dist/card.bundle.js",
+  },
+];
+
+for (const config of builds) {
+  esbuild
+    .build({
+      ...config,
+      bundle: true,
+      format: "iife", // for inline <script> or src loading
+      target: ["chrome58"], // good QtWebEngine baseline
+      minify: true,
+      sourcemap: false,
+    })
+    .catch(() => process.exit(1));
+}

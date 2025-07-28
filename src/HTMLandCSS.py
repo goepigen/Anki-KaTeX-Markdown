@@ -1,7 +1,6 @@
 """This file contains all the HTML / CSS strings for the different card types"""
 
 front = """
-
 <div id="front"><pre>{{Front}}</pre></div>
 
 <script>
