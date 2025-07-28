@@ -15,12 +15,30 @@ HTMLforEditor = BUNDLE_PATH.read_text(encoding="utf-8")
 MODEL_NAME = "KaTeX and Markdown"
 CONF_NAME = "MDKATEX"
 
+def build_cloze_card_html(front_fields, back_fields, bundle_name="card.bundle.js"):
+    body = "\n".join(
+        f"<div id="mdkatex-{field.loewr()}"><pre>{{{{{cloze:Text}}}}}}</pre></div>"
+        for field in front_fields
+    )
+    if back_fields:
+    body += f'\n<div id="extra"><pre>{{Back Extra}}</pre></div>'
+    
+    script = f'<script src="{bundle_name}"></script>'
+    return f"{body}\n{script}"
 
-def build_card_html(fields, bundle_name="_card.bundle.js"):
+
+def build_card_html(front_fields, back_fields=[], bundle_name="card.bundle.js"):
     body = "\n".join(
         f"<div id='mdkatex-{field.lower()}'><pre>{{{{{field}}}}}</pre></div>"
-        for field in fields
+        for field in front_fields
     )
+
+    if back_fields:
+        body += '<hr id="answer" />\n' + "\n".join(
+            f"<div id='mdkatex-{field.lower()}'><pre>{{{{{field}}}}}</pre></div>"
+            for field in back_fields
+        )
+
     script = f'<script src="{bundle_name}"></script>'
     return f"{body}\n{script}"
 
@@ -98,7 +116,7 @@ def create_model():
 
     template = m.newTemplate(MODEL_NAME + " Basic")
     template["qfmt"] = build_card_html(["Front"])
-    template["afmt"] = build_card_html(["Front", "Back"])
+    template["afmt"] = build_card_html(["Front"], ["Back"])
     model["css"] = css
 
     m.addTemplate(model, template)
@@ -145,28 +163,37 @@ def update():
     # mw.col.models.save(model)
     # mw.col.models.save(model_cloze)
 
+    # clean up old assets from Anki's media collection folder
     if os.path.isdir(os.path.join(mw.col.media.dir(), "_katex")):
         shutil.rmtree(os.path.join(mw.col.media.dir(), "_katex"))
 
     if os.path.isdir(os.path.join(mw.col.media.dir(), "_markdown-it")):
         shutil.rmtree(os.path.join(mw.col.media.dir(), "_markdown-it"))
 
-    # Copy new assets from assets/
-    addon_path = os.path.abspath(
+    # Copy assets from assets/ to Anki's media collection folder
+    assets_addon_path = os.path.abspath(
         os.path.join(os.path.dirname(__file__), "..", "assets")
     )
+    dist_addon_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "dist")
+    )
+    _add_file(os.path.join(assets_addon_path, "_katex.min.js"), "_katex.min.js")
+    _add_file(os.path.join(assets_addon_path, "_katex.css"), "_katex.css")
+    _add_file(os.path.join(assets_addon_path, "_auto-render.js"), "_auto-render.js")
+    _add_file(
+        os.path.join(assets_addon_path, "_markdown-it.min.js"), "_markdown-it.min.js"
+    )
+    _add_file(os.path.join(assets_addon_path, "_highlight.css"), "_highlight.css")
+    _add_file(os.path.join(assets_addon_path, "_highlight.js"), "_highlight.js")
+    _add_file(os.path.join(assets_addon_path, "_mhchem.js"), "_mhchem.js")
+    _add_file(
+        os.path.join(assets_addon_path, "_markdown-it-mark.js"), "_markdown-it-mark.js"
+    )
 
-    _add_file(os.path.join(addon_path, "_katex.min.js"), "_katex.min.js")
-    _add_file(os.path.join(addon_path, "_katex.css"), "_katex.css")
-    _add_file(os.path.join(addon_path, "_auto-render.js"), "_auto-render.js")
-    _add_file(os.path.join(addon_path, "_markdown-it.min.js"), "_markdown-it.min.js")
-    _add_file(os.path.join(addon_path, "_highlight.css"), "_highlight.css")
-    _add_file(os.path.join(addon_path, "_highlight.js"), "_highlight.js")
-    _add_file(os.path.join(addon_path, "_mhchem.js"), "_mhchem.js")
-    _add_file(os.path.join(addon_path, "_markdown-it-mark.js"), "_markdown-it-mark.js")
+    _add_file(os.path.join(dist_addon_path, "card.bundle.js"), "card.bundle.js")
 
-    for katex_font in os.listdir(os.path.join(addon_path, "fonts")):
-        _add_file(os.path.join(addon_path, "fonts", katex_font), katex_font)
+    for katex_font in os.listdir(os.path.join(assets_addon_path, "fonts")):
+        _add_file(os.path.join(assets_addon_path, "fonts", katex_font), katex_font)
 
 
 def _add_file(path, filename):
