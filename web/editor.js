@@ -1,7 +1,7 @@
 import { markdown } from "./markdown.js";
-import { getCSS } from "./getCSS.js";
 import { getScript } from "./getScript.js";
 import { replaceInString } from "./replaceInString.js";
+import { getChemistryPackage, getResources } from "./resources.js";
 
 let area = document.getElementById("markdown-area");
 if (area) area.remove();
@@ -44,50 +44,12 @@ if (fields !== null) {
   fields.appendChild(area);
 }
 
-const getResources = [
-  getCSS(
-    "_katex.css",
-    "https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
-  ),
-  getCSS(
-    "_highlight.css",
-    "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css"
-  ),
-  getScript(
-    "_highlight.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"
-  ),
-  getScript(
-    "_katex.min.js",
-    "https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
-  ),
-  getScript(
-    "_auto-render.js",
-    "https://cdn.jsdelivr.net/gh/Jwrede/Anki-KaTeX-Markdown/auto-render-cdn.js"
-  ),
-  getScript(
-    "_markdown-it.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.0.4/markdown-it.min.js"
-  ),
-  getScript(
-    "_markdown-it-mark.js",
-    "https://cdn.jsdelivr.net/gh/Jwrede/Anki-KaTeX-Markdown/_markdown-it-mark.js"
-  ),
-];
-
 const main = function () {
   keyupFunc();
   document.addEventListener("keyup", keyupFunc);
 };
 
-Promise.all(getResources)
-  .then(() =>
-    getScript(
-      "_mhchem.js",
-      "https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/contrib/mhchem.min.js"
-    )
-  )
-  .then(main);
+Promise.all(getResources()).then(getChemistryPackage).then(main);
 
 function renderMath(text) {
   text = replaceInString(text);

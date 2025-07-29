@@ -13,10 +13,17 @@ export function markdown(ID) {
       return ""; // use external default escaping
     },
   }).use(window.markdownItMark);
+
   let text = replaceHTMLElementsInString(document.getElementById(ID).innerHTML);
+
   text = md.render(text);
+
   document.getElementById(ID).innerHTML = text.replace(
     /&lt;\/span&gt;/gi,
     "\\\\"
   );
+
+  document.querySelectorAll(`#${ID} pre code`).forEach((block) => {
+    window.hljs.highlightElement(block);
+  });
 }
