@@ -223,6 +223,10 @@ def update():
     _add_file(
         os.path.join(assets_addon_path, "_markdown-it-mark.js"), "_markdown-it-mark.js"
     )
+    _add_file(
+        os.path.join(assets_addon_path, "_markdown-it-task-lists.js"),
+        "_markdown-it-task-lists.js",
+    )
 
     _add_file(os.path.join(dist_addon_path, "card.bundle.js"), "card.bundle.js")
 

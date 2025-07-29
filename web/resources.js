@@ -30,6 +30,10 @@ export const getResources = () => [
     "_markdown-it-mark.js",
     "https://cdn.jsdelivr.net/gh/Jwrede/Anki-KaTeX-Markdown/_markdown-it-mark.js"
   ),
+  getScript(
+    "_markdown-it-task-lists.js",
+    "https://cdn.jsdelivr.net/npm/markdown-it-task-lists@2.1.1/dist/markdown-it-task-lists.min.js"
+  ),
 ];
 
 export const getChemistryPackage = () =>

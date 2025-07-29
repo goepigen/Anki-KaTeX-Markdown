@@ -12,7 +12,9 @@ export function markdown(ID) {
 
       return ""; // use external default escaping
     },
-  }).use(window.markdownItMark);
+  })
+    .use(window.markdownItMark)
+    .use(window.markdownitTaskLists, { enabled: true });
 
   let text = replaceHTMLElementsInString(document.getElementById(ID).innerHTML);
 
