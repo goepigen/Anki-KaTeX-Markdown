@@ -1,0 +1,6 @@
+{
+  "include": ["."],
+  "exclude": ["node_modules", "dist", "__pycache__"],
+  "typeCheckingMode": "strict",
+  "reportMissingTypeStubs": false
+}
